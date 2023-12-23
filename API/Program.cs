@@ -15,6 +15,7 @@ namespace API
 
             builder.Services.AddControllers();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped(typeof(IGenericReposiroty<>), typeof(GenericRepository<>));
             builder.Services.AddDbContext<StoreDbContext>(e => 
                 e.UseSqlServer(builder.Configuration.GetConnectionString("DefaultDbContext")));
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
