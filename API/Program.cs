@@ -1,4 +1,6 @@
 
+using API.Helpers;
+using AutoMapper;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,7 @@ namespace API
             builder.Services.AddControllers();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped(typeof(IGenericReposiroty<>), typeof(GenericRepository<>));
+            builder.Services.AddAutoMapper(typeof(MappingProfiles));
             builder.Services.AddDbContext<StoreDbContext>(e => 
                 e.UseSqlServer(builder.Configuration.GetConnectionString("DefaultDbContext")));
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

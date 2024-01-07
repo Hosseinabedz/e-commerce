@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Core.Interfaces;
 using Core.Specifications;
 using API.DTOs;
+using AutoMapper;
 
 namespace API.Controllers
 {
@@ -16,13 +17,17 @@ namespace API.Controllers
         public IGenericReposiroty<Product> _productRepo { get; }
         public IGenericReposiroty<ProductBrand> _productbrandRepo { get; }
         public IGenericReposiroty<ProductType> _producttypeRepo { get; }
+        public IMapper _mapper { get; }
+
         public ProductController(IGenericReposiroty<Product> genericProductReposiroty,
                                  IGenericReposiroty<ProductBrand> genericBrandReposiroty1,
-                                 IGenericReposiroty<ProductType> genericTypeReposiroty2)
+                                 IGenericReposiroty<ProductType> genericTypeReposiroty2,
+                                 IMapper mapper)
         {
             _productRepo = genericProductReposiroty;
             _productbrandRepo = genericBrandReposiroty1;
             _producttypeRepo = genericTypeReposiroty2;
+            _mapper = mapper;
         }
         #endregion
         
@@ -52,18 +57,7 @@ namespace API.Controllers
 
             var product =  await _productRepo.GetEntitySpec(spec);
 
-            var productToReturnDTO = new ProductToReturnDTO()
-            {
-                id = product.Id,
-                Description = product.Description,
-                Name = product.Name,
-                PictureUrl = product.PictureUrl,
-                Price = product.Price,
-                ProductBrand = product.ProductBrand.Name,
-                productType = product.productType.Name
-            };
-
-            return Ok(productToReturnDTO);
+            return _mapper.Map<Product, ProductToReturnDTO>(product);
         }
         [HttpGet("brands")]
         public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetProductBrands()
