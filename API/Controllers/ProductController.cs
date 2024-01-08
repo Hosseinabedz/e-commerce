@@ -38,7 +38,6 @@ namespace API.Controllers
 
             var products = await _productRepo.ListAsync(spec);
 
-            // map to DTO
             return Ok(_mapper
                 .Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDTO>>(products));
         }
