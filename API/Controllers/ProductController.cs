@@ -8,11 +8,9 @@ using AutoMapper;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductController : ControllerBase
+    
+    public class ProductController : BaseApiController
     {
-
         #region Ctor
         public IGenericReposiroty<Product> _productRepo { get; }
         public IGenericReposiroty<ProductBrand> _productbrandRepo { get; }
@@ -41,6 +39,7 @@ namespace API.Controllers
             return Ok(_mapper
                 .Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDTO>>(products));
         }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductToReturnDTO>> GetProduct(int id)
         {
@@ -50,11 +49,13 @@ namespace API.Controllers
 
             return _mapper.Map<Product, ProductToReturnDTO>(product);
         }
+
         [HttpGet("brands")]
         public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetProductBrands()
         {
             return Ok(await _productbrandRepo.GetAllAsync());
         }
+
         [HttpGet("types")]
         public async Task<ActionResult<IReadOnlyList<ProductType>>> GetProducttypes()
         {
