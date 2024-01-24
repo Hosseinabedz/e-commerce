@@ -1,5 +1,6 @@
 
 using API.Errors;
+using API.Extensions;
 using API.Helpers;
 using API.Middleware;
 using AutoMapper;
@@ -19,30 +20,11 @@ namespace API
             // Add services to the container.
 
             builder.Services.AddControllers();
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            builder.Services.AddScoped(typeof(IGenericReposiroty<>), typeof(GenericRepository<>));
+            
             builder.Services.AddAutoMapper(typeof(MappingProfiles));
-            builder.Services.AddDbContext<StoreDbContext>(e => 
+            builder.Services.AddDbContext<StoreDbContext>(e =>
                 e.UseSqlServer(builder.Configuration.GetConnectionString("DefaultDbContext")));
-
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = actionContext =>
-                {
-                    var errors = actionContext.ModelState
-                        .Where(e => e.Value.Errors.Count > 0)
-                        .SelectMany(x => x.Value.Errors)
-                        .Select(x => x.ErrorMessage)
-                        .ToArray();
-
-                    var errorResponse = new ApiValidationErrorResponse()
-                    {
-                        Errors = errors
-                    };
-
-                    return new BadRequestObjectResult(errorResponse);
-                };
-            });
+            builder.Services.AddApplicationServices();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -65,12 +47,11 @@ namespace API
             }
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseMiddleware<ExceptionMiddleware>();
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            
+            app.UseMiddleware<ExceptionMiddleware>();
+            
+            app.UseSwaggerDocumention();
+            
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
             app.UseHttpsRedirection();
 
